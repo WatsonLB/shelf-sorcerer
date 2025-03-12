@@ -93,7 +93,6 @@ export const useBookStore = create<BookState>()(
   )
 );
 
-// Helper function to filter and sort books
 function filterAndSortBooks(
   books: Book[],
   searchQuery: string,
@@ -113,10 +112,17 @@ function filterAndSortBooks(
     );
   }
   
-  // Apply sorting
+  // Apply sorting with proper type handling
   result.sort((a, b) => {
-    const fieldA = a[sortOptions.field as keyof Book] as string;
-    const fieldB = b[sortOptions.field as keyof Book] as string;
+    const fieldA = String(a[sortOptions.field]); // Convert to string to handle all field types
+    const fieldB = String(b[sortOptions.field]);
+    
+    if (sortOptions.field === 'publishedDate') {
+      // Handle date comparison
+      const dateA = new Date(fieldA).getTime();
+      const dateB = new Date(fieldB).getTime();
+      return sortOptions.direction === 'asc' ? dateA - dateB : dateB - dateA;
+    }
     
     const comparison = fieldA.localeCompare(fieldB);
     return sortOptions.direction === 'asc' ? comparison : -comparison;

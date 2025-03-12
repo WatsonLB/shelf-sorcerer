@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Book, PlusCircle, LineChart, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useNavigate, useLocation } from "react-router-dom";
 
 interface NavItemProps {
   icon: React.ElementType;
@@ -34,9 +35,9 @@ interface SideBarProps {
 
 export const SideBar = ({ isOpen, onClose, onAddBook }: SideBarProps) => {
   const [isMobile, setIsMobile] = useState(false);
-  const [activeView, setActiveView] = useState("books");
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  // Handle screen size changes
   useEffect(() => {
     const checkIsMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -48,7 +49,6 @@ export const SideBar = ({ isOpen, onClose, onAddBook }: SideBarProps) => {
     return () => window.removeEventListener('resize', checkIsMobile);
   }, []);
 
-  // Close sidebar when clicking outside on mobile
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const sidebar = document.getElementById('sidebar');
@@ -61,9 +61,15 @@ export const SideBar = ({ isOpen, onClose, onAddBook }: SideBarProps) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isMobile, isOpen, onClose]);
 
+  const navigateTo = (path: string) => {
+    navigate(path);
+    if (isMobile) {
+      onClose();
+    }
+  };
+
   return (
     <>
-      {/* Mobile overlay */}
       {isMobile && isOpen && (
         <div 
           className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 transition-opacity duration-300"
@@ -71,7 +77,6 @@ export const SideBar = ({ isOpen, onClose, onAddBook }: SideBarProps) => {
         />
       )}
       
-      {/* Sidebar */}
       <aside
         id="sidebar"
         className={cn(
@@ -88,20 +93,20 @@ export const SideBar = ({ isOpen, onClose, onAddBook }: SideBarProps) => {
             <NavItem 
               icon={Book} 
               title="Books" 
-              active={activeView === "books"} 
-              onClick={() => setActiveView("books")}
+              active={location.pathname === '/'} 
+              onClick={() => navigateTo('/')}
             />
             <NavItem 
               icon={LineChart} 
               title="Statistics" 
-              active={activeView === "statistics"} 
-              onClick={() => setActiveView("statistics")}
+              active={location.pathname === '/statistics'} 
+              onClick={() => navigateTo('/statistics')}
             />
             <NavItem 
               icon={Settings} 
               title="Settings" 
-              active={activeView === "settings"} 
-              onClick={() => setActiveView("settings")}
+              active={location.pathname === '/settings'} 
+              onClick={() => navigateTo('/settings')}
             />
           </div>
           
