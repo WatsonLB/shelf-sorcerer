@@ -16,6 +16,8 @@ interface BookState {
   deleteBook: (id: string) => void;
   setSortOptions: (options: BookSortOptions) => void;
   setSearchQuery: (query: string) => void;
+  checkoutBook: (id: string, name: string, phone: string) => void;
+  checkinBook: (id: string) => void;
 }
 
 export const useBookStore = create<BookState>()(
@@ -83,6 +85,50 @@ export const useBookStore = create<BookState>()(
           return {
             searchQuery: query,
             filteredBooks: filterAndSortBooks(state.books, query, state.sortOptions),
+          };
+        });
+      },
+
+      checkoutBook: (id, name, phone) => {
+        set((state) => {
+          const now = new Date().toISOString();
+          const updatedBooks = state.books.map((book) => 
+            book.id === id
+              ? { 
+                  ...book, 
+                  updatedAt: now,
+                  checkedOut: {
+                    isCheckedOut: true,
+                    name,
+                    phone,
+                    checkoutDate: now
+                  }
+                }
+              : book
+          );
+          
+          return {
+            books: updatedBooks,
+            filteredBooks: filterAndSortBooks(updatedBooks, state.searchQuery, state.sortOptions),
+          };
+        });
+      },
+
+      checkinBook: (id) => {
+        set((state) => {
+          const updatedBooks = state.books.map((book) => 
+            book.id === id
+              ? { 
+                  ...book, 
+                  updatedAt: new Date().toISOString(),
+                  checkedOut: undefined
+                }
+              : book
+          );
+          
+          return {
+            books: updatedBooks,
+            filteredBooks: filterAndSortBooks(updatedBooks, state.searchQuery, state.sortOptions),
           };
         });
       },

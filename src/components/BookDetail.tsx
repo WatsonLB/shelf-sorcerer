@@ -7,7 +7,10 @@ import {
   Book as BookIcon,
   Building, 
   Clock, 
-  TextQuote
+  TextQuote,
+  LogOut,
+  User,
+  Phone
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -35,7 +38,15 @@ export const BookDetail = ({ book, onClose, onEdit }: BookDetailProps) => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-semibold">{book.title}</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="text-2xl font-semibold">{book.title}</h2>
+          {book.checkedOut?.isCheckedOut && (
+            <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+              <LogOut className="h-3 w-3 mr-1" />
+              Checked Out
+            </span>
+          )}
+        </div>
         <p className="text-muted-foreground">{book.author}</p>
       </div>
 
@@ -136,6 +147,40 @@ export const BookDetail = ({ book, onClose, onEdit }: BookDetailProps) => {
           </div>
         </div>
       </div>
+
+      {book.checkedOut?.isCheckedOut && (
+        <div className="space-y-2">
+          <h3 className="text-sm font-medium text-muted-foreground">Checkout Information</h3>
+          <Separator />
+          <div className="bg-yellow-50/50 dark:bg-yellow-900/10 p-3 rounded-md">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="flex items-start gap-3">
+                <User className="w-4 h-4 text-muted-foreground mt-0.5" />
+                <div>
+                  <p className="text-xs text-muted-foreground">Borrower</p>
+                  <p className="text-sm">{book.checkedOut.name}</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-3">
+                <Phone className="w-4 h-4 text-muted-foreground mt-0.5" />
+                <div>
+                  <p className="text-xs text-muted-foreground">Phone</p>
+                  <p className="text-sm">{book.checkedOut.phone}</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-3 sm:col-span-2">
+                <Calendar className="w-4 h-4 text-muted-foreground mt-0.5" />
+                <div>
+                  <p className="text-xs text-muted-foreground">Checkout Date</p>
+                  <p className="text-sm">{formatDate(book.checkedOut.checkoutDate)}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {book.description && (
         <div className="space-y-2">

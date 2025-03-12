@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { 
-  ArrowDown, ArrowUp, BookOpen, Edit, MoreVertical, Trash2
+  ArrowDown, ArrowUp, BookOpen, Edit, MoreVertical, Trash2, LogOut
 } from "lucide-react";
 import { Book, SortField, BookSortOptions } from "@/types/book";
 import { useBookStore } from "@/store/bookStore";
@@ -139,14 +139,23 @@ export const BookList = ({ onEditBook, onViewBook }: BookListProps) => {
               className={cn(
                 "p-4 transition-all",
                 animateItems && "animate-slide-up",
-                !animateItems && "opacity-0"
+                !animateItems && "opacity-0",
+                book.checkedOut?.isCheckedOut && "border-yellow-300 bg-yellow-50/50 dark:bg-yellow-900/10"
               )}
               style={{ animationDelay: `${index * 30}ms` }}
               onClick={() => onViewBook(book)}
             >
               <div className="flex items-center justify-between">
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-medium truncate">{book.title}</h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-medium truncate">{book.title}</h3>
+                    {book.checkedOut?.isCheckedOut && (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                        <LogOut className="h-3 w-3 mr-1" />
+                        Checked Out
+                      </span>
+                    )}
+                  </div>
                   <p className="text-sm text-muted-foreground truncate">
                     {book.author}
                   </p>
@@ -154,6 +163,12 @@ export const BookList = ({ onEditBook, onViewBook }: BookListProps) => {
                     <span>{book.publisher}</span>
                     <span>•</span>
                     <span>{formatDate(book.publishedDate)}</span>
+                    {book.checkedOut?.isCheckedOut && (
+                      <>
+                        <span>•</span>
+                        <span>Borrowed by: {book.checkedOut.name}</span>
+                      </>
+                    )}
                   </div>
                 </div>
                 

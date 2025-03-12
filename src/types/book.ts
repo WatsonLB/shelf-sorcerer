@@ -12,6 +12,12 @@ export interface Book {
   pageCount?: number;
   createdAt: string;
   updatedAt: string;
+  checkedOut?: {
+    isCheckedOut: boolean;
+    name: string;
+    phone: string;
+    checkoutDate: string;
+  };
 }
 
 export type SortField = 'title' | 'author' | 'publisher' | 'publishedDate';
